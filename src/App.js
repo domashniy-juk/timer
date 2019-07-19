@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css';
 
 
@@ -7,13 +7,13 @@ const App = () => {
   let [count,setCount] = useState(0)
   let [timer, setTimer] = useState(0.5)
  
-
   const start = () => {
     if(timer && !count){
       setCount(count++)
       setTimer(setInterval(() => setCount(count++), 1000))
     }
   }
+
   const change = () => {
     if(timer && count){
       clearInterval(timer)
@@ -24,11 +24,15 @@ const App = () => {
       setTimer(setInterval(() => setCount(count++), 1000))
     }
   }
+
   const remove = () => {
     setCount(0)
     clearInterval(timer)
     setTimer(0.5)
   }
+
+  useEffect(() => () => clearInterval(timer))
+
   return (
     <main>
       <div className = 'circle'>

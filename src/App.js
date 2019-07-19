@@ -31,7 +31,7 @@ const App = () => {
     setTimer(0.5)
   }
 
-  useEffect(() => () => clearInterval(timer))
+  useEffect(() => () => clearInterval(timer),[])
 
   return (
     <main>

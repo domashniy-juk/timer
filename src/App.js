@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import './App.css';
+import './App.sass';
 
 const App = () => {
 	let [count, setCount] = useState(0);

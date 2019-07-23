@@ -1,37 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import { changeCount, changeTimer } from './store/actions';
 
 import './App.sass';
 
-const App = () => {
-	let [count, setCount] = useState(0);
-    let [timer, setTimer] = useState(0.5);
-    
-    const inc = () => setCount(count++)
+const stateToProps = state => {
+	return {
+		...state,
+	};
+};
+
+const actionProps = {
+	changeCount,
+	changeTimer,
+};
+
+const App = ({ count, timer, changeCount, changeTimer }) => {
+	const inc = () => {
+		changeCount(count++);
+		changeTimer(setInterval(() => changeCount(count++), 1000));
+	};
 
 	const start = () => {
-		if (timer && !count) {
-			inc();
-			setTimer(setInterval(() => inc(), 1000));
-		}
+		if (!timer) inc();
 	};
 
 	const change = () => {
-		if (timer && count) {
+		if (timer && count && timer !== 1.5) {
 			clearInterval(timer);
-			setTimer(0);
-		} else if (count && !timer) {
-			inc();
-			setTimer(setInterval(() => inc(), 1000));
-		}
+			changeTimer(1.5);
+		} else if (count && timer === 1.5) inc();
 	};
 
 	const remove = () => {
-		setCount(0);
+		changeCount(0);
 		clearInterval(timer);
-		setTimer(0.5);
+		changeTimer(0);
 	};
 
+	useEffect(() => {
+		if (timer && timer !== 1.5) inc();
+	}, []);
+
 	useEffect(() => () => clearInterval(timer), []);
+
+	useEffect(() => {
+		let state = JSON.stringify({ count, timer });
+		localStorage.setItem('date', state);
+	});
 
 	return (
 		<div className="main">
@@ -44,7 +60,7 @@ const App = () => {
 			<div className="main-count">счетчик: {count}</div>
 			<div>
 				<button onClick={start}>Старт</button>
-				{timer ? (
+				{timer !== 1.5 && timer ? (
 					<button onClick={change}>Стоп</button>
 				) : (
 					<button onClick={change}>Продолжить</button>
@@ -55,4 +71,7 @@ const App = () => {
 	);
 };
 
-export default App;
+export default connect(
+	stateToProps,
+	actionProps
+)(App);
